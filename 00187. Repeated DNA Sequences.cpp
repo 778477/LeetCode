@@ -43,7 +43,7 @@ using namespace std;
 
 /*
  
- #1. use customize hash
+ #1. use customize hash map<int,int>
  32 / 32 test cases passed.
  Status: Accepted
  Runtime: 465 ms
@@ -55,7 +55,10 @@ using namespace std;
  Status: Accepted
  Runtime: 555 ms
  
- 
+ #3. use customize hash without map
+ 32 / 32 test cases passed.
+ Status: Accepted
+ Runtime: 16 ms
  
  */
 
@@ -65,65 +68,30 @@ class Solution {
 public:
     vector<string> findRepeatedDnaSequences(string s) {
         vector<string> ans;
-        map<int,int> hashTable;
         
-        
-        int letterLongLimit = 10;
-        if(s.length() <= letterLongLimit) return ans;
-        
-        for(int i=0; i<=s.length() - letterLongLimit;i++){
-            string subStr = s.substr(i,letterLongLimit);
+        int key = 0;
+        unsigned hashTable[1<<20] = {0}; // 0x00000-0xfffff
+        for(int i=0; i<s.length();i++){
             
-            int hashNum = hashDNASequence(subStr);
+            key = (key << 2 | (s[i]+1)%5) & 0xfffff;
+            if(i < 9) continue;
             
-            if(hashTable[hashNum] < 3){// more than once
-                hashTable[hashNum]++;
-                if(hashTable[hashNum] == 2){
-                    ans.push_back(subStr);
-                }
+            if(hashTable[key] == 1){
+                ans.push_back(s.substr(i-9,10));
             }
             
+            hashTable[key]++;
         }
-        
         
         return ans;
     }
     
-private:
-    int hashDNASequence(const string s){
-        int hashNum = 0;
-        
-        for(int i=0;i<s.length();i++){
-            int bitVal = 0;
-            switch (s[i]) {
-                case 'A':
-                    bitVal = 1;
-                    break;
-                case 'C':
-                    bitVal = 2;
-                    break;
-                case 'G':
-                    bitVal = 3;
-                    break;
-                case 'T':
-                    bitVal = 4;
-                    break;
-                default:
-                    break;
-            }
-            
-            hashNum = hashNum + bitVal * pow(4, i);
-            
-        }
-        
-        return hashNum;
-    }
 };
 
 int main(){
     Solution *solve = new Solution();
     
-    vector<string> ans = solve->findRepeatedDnaSequences("TTCAAAACTTTGTGGGAGCATGCTCCCATGTGGGCCAACCGCGGCGGGCCATCTTTAAATACGAAACCCAA");
+    vector<string> ans = solve->findRepeatedDnaSequences("CCCCCCACCCCCCCCCCCCCCACCC");
     
     for_each(ans.begin(), ans.end(), [](const string s){
         cout<<s<<endl;
