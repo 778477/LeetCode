@@ -89,7 +89,7 @@ public:
 
 class FileSystem {
 public:
-    
+    const char seg = '/';
     FileSystem() {
         root = new Directory();
     }
@@ -102,12 +102,9 @@ public:
     }
     
     vector<string> ls(string path) {
-        vector<string> res;
-        const char seg = '/';
-        
-        unsigned idx = 0;
-        string name = "";
         Directory *current = root;
+        vector<string> res;
+        string name = "";
         
         for (char ch : path){
             if((ch == seg && name.length() > 0)){
@@ -116,8 +113,6 @@ public:
             } else if(ch != seg){
                 name += ch;
             }
-            
-            ++idx;
         }
         
         if(name.length() > 0){
@@ -129,25 +124,18 @@ public:
             }
         }
         
-        if(idx == path.length()){
-            for(pair<string, baseFileNode *> file : current->files){
-                res.push_back(file.second->name);
-            }
-            
-            sort(res.begin(),res.end());
+        for(pair<string, baseFileNode *> file : current->files){
+            res.push_back(file.second->name);
         }
-        
+        sort(res.begin(),res.end());
         return res;
     }
     
     void mkdir(string path) {
-        const char seg = '/';
-        unsigned idx = 0;
-        string name = "";
         Directory *current = root;
-        
+        string name = "";
         for (char ch : path){
-            if((ch == seg && idx != 0)){
+            if((ch == seg && name.length() > 0)){
                 if(!current->files[name]){
                     Directory *tmp = new Directory();
                     tmp->name = name,tmp->type = DirectoryType;
@@ -160,8 +148,6 @@ public:
             } else if(ch != seg){
                 name += ch;
             }
-            
-            idx ++;
         }
         
         if(name.length() > 0 && !current->files[name]){
@@ -172,14 +158,11 @@ public:
     }
     
     void addContentToFile(string filePath, string content) {
-        
-        const char seg = '/';
-        unsigned idx = 0;
-        string name = "";
         Directory *current = root;
+        string name = "";
         
         for (char ch : filePath){
-            if(ch == seg && idx != 0){
+            if(ch == seg && name.length() > 0){
                 if(!current->files[name]){
                     Directory *tmp = new Directory();
                     tmp->name = name,tmp->type = DirectoryType;
@@ -188,13 +171,10 @@ public:
                 } else {
                     current = (Directory *)current->files[name];
                 }
-                
                 name.clear();
-                
             } else if(ch != seg){
                 name += ch;
             }
-            ++idx;
         }
         
         if(!current->files[name]){
@@ -208,23 +188,16 @@ public:
     }
     
     string readContentFromFile(string filePath) {
-        string content;
-        
-        const char seg = '/';
-        unsigned idx = 0;
-        string name = "";
         Directory *current = root;
-        
+        string name = "";
         for (char ch : filePath){
-            if(ch == seg && idx != 0){
+            if(ch == seg && name.length() > 0){
                 current = (Directory *)current->files[name];
                 name.clear();
             } else if(ch != seg){
                 name += ch;
             }
-            idx ++;
         }
-        
         return ((File *)current->files[name])->content;
     }
 private:
@@ -253,17 +226,17 @@ int main(){
     FileSystem fileSystem;
     
     
-    //    output(fileSystem.ls("/"));
-    //    fileSystem.mkdir("/a/b/c");
-    //    output(fileSystem.ls("/"));
-    //    fileSystem.addContentToFile("/a/b/c/d", "Hello");
-    //    cout<<fileSystem.readContentFromFile("/a/b/c/d")<<endl;
-    
-    
     output(fileSystem.ls("/"));
     fileSystem.mkdir("/a/b/c");
-    output(fileSystem.ls("/a/b"));
+    output(fileSystem.ls("/"));
+    fileSystem.addContentToFile("/a/b/c/d", "Hello");
+    cout<<fileSystem.readContentFromFile("/a/b/c/d")<<endl;
     
+    
+    //    output(fileSystem.ls("/"));
+    //    fileSystem.mkdir("/a/b/c");
+    //    output(fileSystem.ls("/a/b"));
+    //
     
     return 0;
 }
