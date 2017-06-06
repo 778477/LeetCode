@@ -95,8 +95,9 @@ public:
                 
                 dp[x][y] = max(dp[x][y],1 + dp[xx][yy]);
             }
-            dp[x][y] = max(1,dp[x][y]);
         }
+        
+        dp[x][y] = max(1,dp[x][y]);
         return dp[x][y];
     }
     
