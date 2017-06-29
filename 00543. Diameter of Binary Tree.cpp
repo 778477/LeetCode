@@ -73,8 +73,8 @@ public:
         
         int left = dfs(root->left, ans);
         int right = dfs(root->right, ans);
-        *ans = *ans > left+right+1 ?: left+right+1;
-        
+        *ans = max(*ans,left+right+1);
+
         return max(left, right) + 1;
     }
     
@@ -86,6 +86,7 @@ public:
         return max(0,ans-1);
     }
 };
+
 
 
 // [4,-7,-3,null,null,-9,-3,9,-7,-4,null,6,null,-6,-6,null,null,0,6,5,null,9,null,null,-1,-4,null,null,null,-2]
