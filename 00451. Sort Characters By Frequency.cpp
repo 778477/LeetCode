@@ -1,33 +1,18 @@
 //
 //  main.cpp
-//  leetCode
+//  leetcode-whiteboard
 //
 //  Created by miaoyou.gmy
-//  Copyright © 2016年 miaoyou.gmy. All rights reserved.
+//  Copyright © 2017年 miaoyou.gmy. All rights reserved.
 //
 
-#include <iostream>
-#include <vector>
-#include <string>
-#include <queue>
-#include <stack>
-#include <list>
-#include <map>
-#include <set>
-#include <algorithm>
-#include <functional>
-#include "math.h"
-#include "stdlib.h"
-#include "stdio.h"
-using namespace std;
 
-/*
+
+/**
  
  451. Sort Characters By Frequency
- Total Accepted: 8028
- Total Submissions: 16018
- Difficulty: Medium
- Contributors: stickypens
+ DescriptionHintsSubmissionsDiscussSolution
+ Discuss Pick One
  Given a string, sort it in decreasing order based on the frequency of characters.
  
  Example 1:
@@ -63,74 +48,54 @@ using namespace std;
  Explanation:
  "bbaA" is also a valid answer, but "Aabb" is incorrect.
  Note that 'A' and 'a' are treated as two different characters.
+
  
  */
 
-
-
-/*
+/**
  
- 34 / 34 test cases passed.
+ 35 / 35 test cases passed.
  Status: Accepted
- Runtime: 1005 ms
- 
+ Runtime: 19 ms
  
  */
+#include <iostream>
+#include <string>
+#include <vector>
+#include <numeric>
+#include <queue>
+#include <unordered_map>
 
-
+using namespace std;
 
 class Solution {
 public:
-    Solution(){
-        _maxFrequent = 0;
-    }
-    
-    
     string frequencySort(string s) {
-        string ans;
-        
-        for_each(s.begin(), s.end(), [&](const char ch){
-            if(table.count(ch)){
-                int oldF = table[ch];
-                frequentTable[oldF].erase(iterTable[ch]);
-                iterTable.erase(ch);
-            }
-            
-            ++table[ch];
-            _maxFrequent = _maxFrequent > table[ch] ? _maxFrequent : table[ch]; // update maxFrequent
-            frequentTable[table[ch]].push_back(ch);
-            iterTable[ch] = --frequentTable[table[ch]].end();
-        });
-        
-        while(_maxFrequent > 0){
-            
-            for_each(frequentTable[_maxFrequent].begin(), frequentTable[_maxFrequent].end(), [&](const char ch){
-                for(int i=0;i<_maxFrequent;i++){
-                    ans.push_back(ch);
-                }
-            });
-            
-            _maxFrequent--;
+        unordered_map<char, int> cnt;
+        for(auto c : s){
+            ++cnt[c];
+        }
+        priority_queue<pair<int, char>> q;
+        for(auto i : cnt){
+            q.push(make_pair(i.second, i.first));
         }
         
+        string ans = "";
+        
+        while(!q.empty()){
+            for(auto i = 0; i<q.top().first; ++i){
+                ans += q.top().second;
+            }
+            q.pop();
+        }
         return ans;
     }
-    
-    
-private:
-    int _maxFrequent;
-    map<char,int> table;
-    map<int, list<char>> frequentTable;
-    map<char, list<char>::iterator> iterTable;
 };
 
 
-int main(){
-    Solution solve;
+int main(int argc, const char * argv[]) {
     
-    cout<<solve.frequencySort("cccaaa")<<endl;
     
     
     return 0;
 }
-
