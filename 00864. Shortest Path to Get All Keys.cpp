@@ -61,27 +61,15 @@ static auto _ = []() {
     return 0;
 }();
 
-
-enum keyChain{
-    keyChain_a = 1<<0,
-    keyChain_b = 1<<1,
-    keyChain_c = 1<<2,
-    keyChain_d = 1<<3,
-    keyChain_e = 1<<4,
-    keyChain_f = 1<<5
-};
-
 typedef pair<int, int> point;
 class State{
 public:
     int step,keys;
-    unsigned getKeysCount;
     point p;
     State(int _s,int _keys,point _p){
         step = _s;
         keys = _keys;
         p = _p;
-        getKeysCount = 0;
     }
 };
 
@@ -113,7 +101,7 @@ public:
             State now = road.front();
             road.pop();
             
-            if(now.getKeysCount == totalKeyCount){
+            if(now.keys == (1<<totalKeyCount) - 1){
                 return now.step;
             }
             
@@ -133,27 +121,17 @@ public:
                 }
                 
                 State next(now.step +1,now.keys,make_pair(xx, yy));
-                next.getKeysCount = now.getKeysCount;
                 if(grid[xx][yy]>='a' && grid[xx][yy]<='f'){
                     int tmpKey = 1 << (grid[xx][yy] - 'a');
-                    
-                    if(!(next.keys&tmpKey)){
-                        next.keys = next.keys | tmpKey;
-                        ++next.getKeysCount;
-                    }
-                    
+                    next.keys = next.keys | tmpKey;
                 }
                 
                 if(next.step < vis[next.p.first][next.p.second][next.keys]){
                     vis[next.p.first][next.p.second][next.keys] = next.step;
                     road.push(next);
                 }
-                
             }
-            
         }
-        
-        
         return -1;
     }
 };
