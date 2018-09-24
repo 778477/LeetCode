@@ -20,7 +20,6 @@
 
 using namespace std;
 
-//https://github.com/778477/LeetCode
 
 /**
  
@@ -52,7 +51,7 @@ using namespace std;
  times is a strictly increasing array with all elements in [0, 10^9].
  TopVotedCandidate.q is called at most 10000 times per test case.
  TopVotedCandidate.q(int t) is always called with t >= times[0].
- 
+
  */
 
 /**
@@ -61,7 +60,15 @@ using namespace std;
  Status: Accepted
  Runtime: 512 ms
  
+ 
+ // use STL lower_bound faster than customize binarySearch
+ 97 / 97 test cases passed.
+ Status: Accepted
+ Runtime: 276 ms
+
  */
+
+//https://github.com/778477/LeetCode
 class TopVotedCandidate {
 private:
     unordered_map<unsigned, unsigned> votes;
@@ -88,28 +95,13 @@ public:
     }
     
     int q(int t) {
-        return topVote[bfind(_times,t)];
-    }
-    
-    unsigned long bfind(vector<int> times, int t){
-        if(!times.empty() && t >= times.back()){
-            return times.size() - 1;
-        }
-        unsigned long l = 0, r = times.size();
-        unsigned long mid =  l + ((r - l)>>1);
         
-        while(l < r){
-            mid = l + ((r - l)>>1);
-            if(times[mid] > t){
-                r = mid;
-            } else if(times[mid] < t){
-                if(l+1 <= r && times[l+1] > t) return l;
-                l = mid;
-            } else {
-                return mid;
-            }
+        auto iter = lower_bound(_times.begin(), _times.end(), t);
+        if(iter == _times.end()){
+            --iter;
         }
-        return l;
+        unsigned long idx = iter - _times.begin();
+        return topVote[_times[idx] <= t ? idx : idx-1];
     }
 };
 
@@ -132,7 +124,7 @@ public:
 
 int main(int argc, const char * argv[]) {
     std::ios::sync_with_stdio(false); std::cin.tie(NULL);
-    
+
     TopVotedCandidate *tvc = new TopVotedCandidate({0,1,0,1,1},{24,29,31,76,79});
     
     vector<int> ts = {28,24,29,77,30,25,76,75,81,80};
@@ -140,6 +132,6 @@ int main(int argc, const char * argv[]) {
     for(auto t : ts){
         cout<<tvc->q(t)<<",";
     }
+    cout<<endl;
     return 0;
 }
-
