@@ -52,16 +52,22 @@ using namespace std;
  0 <= points[i][0] <= 40000
  0 <= points[i][1] <= 40000
  All points are distinct.
- 
- 
+
+
  */
 
 /**
  
- 
+
  137 / 137 test cases passed.
  Status: Accepted
- Runtime: 168 ms
+ Runtime: 60 ms
+ 
+ 更新了一下实现：看到评论区发现原来C++自带了 交集实现set_intersection。
+ 
+ 去掉了原来n^2的遍历的逻辑，代码变得更加优雅一些。
+ 
+ 有些解法利用set做点集。这里我的实现是 先hash，做边集。
  
  */
 
@@ -73,48 +79,32 @@ static int x = [](){ios::sync_with_stdio(0);cin.tie(0);cout.tie(0);return 0;}();
 
 class Solution {
 public:
-    int minAreaRect(vector<vector<int>>& points) {
-        int ans = INT_MAX;
-        bool flag = false;
-        
-        sort(points.begin(), points.end(), [&](const vector<int> a, const vector<int> b){
-            return a[0] < b[0];
-        });
-        
-        unordered_map<int, vector<int> *> yx;
+    int minAreaRect(vector<vector<int>>& points, int ans = INT_MAX) {
+
+       
+        unordered_map<int, set<int>> yx;
         for(vector<int> point : points){
-            int x = point[0], y = point[1];
-            if(!yx[y]){
-                yx[y] = new vector<int>();
-            }
-            yx[y]->push_back(x);
+            yx[point[0]].insert(point[1]);
         }
         
         
-        
-        for_each(yx.begin(), yx.end(), [&](const auto pi){
-            if(pi.second->size() < 2){
-                return ;
+        for(auto pi = yx.begin(); pi != yx.end(); ++pi){
+            if(pi->second.size() < 2) continue;
+            for(auto pj = next(pi); pj != yx.end(); ++pj){
+                if(pj->second.size() < 2) continue;
+                vector<int> y;
+                vector<int> u;
+                
+                set_intersection(begin(pi->second), end(pi->second),
+                                 begin(pj->second), end(pj->second),
+                                 inserter(y, y.begin()));
+                
+                for(auto k = 1; k<y.size(); ++k){
+                    ans = min(ans, abs(pj->first - pi->first) * (y[k] - y[k-1]));
+                }
             }
-            for_each(yx.begin(), yx.end(), [&](const auto pj){
-                if(pi.first == pj.first  ||
-                   pj.second->size() < 2){
-                    return ;
-                }
-                vector<int> v = *(pj.second);
-                for(auto i = 0; i<v.size(); ++i){
-                    for(auto j = i+1; j<v.size(); ++j){
-                        if(binary_search(pi.second->begin(), pi.second->end(), v[i]) &&
-                           binary_search(pi.second->begin(), pi.second->end(), v[j])){
-                            ans = min(ans, abs(pi.first - pj.first) * (v[j] - v[i]));
-                            flag = true;
-                        }
-                    }
-                }
-            });
-        });
-        
-        return flag ? ans : 0;
+        }
+        return ans == INT_MAX ? 0 : ans;
     }
 };
 
@@ -133,4 +123,3 @@ int main(int argc, const char * argv[]) {
     
     return 0;
 }
-
